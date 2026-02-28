@@ -1,0 +1,12 @@
+#RadialBar {
+    --fill-color: rgb(4, 255, 91);
+    --background-color: rgba(255, 255, 255, 0);
+}
+
+#RadialBar.red {
+    --fill-color: rgb(155, 50, 0);
+}
+
+#RadialBar.blue {
+    --fill-color: rgb(0, 50, 155);
+}

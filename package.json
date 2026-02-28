@@ -1,0 +1,22 @@
+{
+  "name": "com.psigenvision.playerlooptimers",
+  "displayName": "Player Loop Timers",
+  "version": "0.1.0",
+  "unity": "6000.3",
+  "unityRelease": "2f1",
+  "description": "Purpose: Provide extensible self-managed timer solution that is centralized and hooked into the player loop.\n\nFunction: Injection of timers into the low level player loop (Update) via a TimerManager.\n\nNote: Based on git-amend's own Improved Timers system.",
+  "author": {
+    "name": "David Kokoski",
+    "email": "kokogamedev@gmail.com"
+  },
+  "dependencies": {
+    "com.psigenvision.utilities": "1.0.15"
+  },
+  "samples": [
+    {
+      "displayName": "Radial Bar Demo",
+      "description": "Implements countdown timers to custom radial bars created using Unity UI Toolkit to demonstrate the Player Loop Timers package.",
+      "path": "Samples~/Demo"
+    }
+  ]
+}

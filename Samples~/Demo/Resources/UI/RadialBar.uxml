@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Internal/PsigenVision/ImprovedTimers/Demo/Resources/UI/radialbar.uss?fileID=7433441132597879392&amp;guid=be61ee1113373324188ba72a557c86aa&amp;type=3#radialbar"/>
+    <ui:VisualElement style="flex-grow: 1; top: 0; align-items: flex-start; justify-content: flex-start; align-content: flex-start;">
+        <PsigenVision.ImprovedTimers.Demo.RadialBar progress="100.3" name="RadialBar" class="blue" style="height: 286px; width: 265px; left: auto; top: auto; justify-content: center; align-items: auto; align-content: auto; align-self: flex-start;">
+            <PsigenVision.ImprovedTimers.Demo.RadialBar progress="100.3" name="RadialBar" language-direction="Inherit" class="red" style="height: 218px; width: 227px; left: auto; top: auto; justify-content: center; align-items: auto; align-content: center; align-self: center; bottom: auto;">
+                <Bindings>
+                    <ui:DataBinding property="progress" data-source-path="innerRadialBarProgress" data-source-type="PsigenVision.ImprovedTimers.Demo.TimerExample, Assembly-CSharp" binding-mode="ToTarget"/>
+                </Bindings>
+            </PsigenVision.ImprovedTimers.Demo.RadialBar>
+            <Bindings>
+                <ui:DataBinding property="progress" data-source-path="outerRadialBarProgress" data-source-type="PsigenVision.ImprovedTimers.Demo.TimerExample, Assembly-CSharp" binding-mode="ToTarget"/>
+            </Bindings>
+        </PsigenVision.ImprovedTimers.Demo.RadialBar>
+    </ui:VisualElement>
+</ui:UXML>
