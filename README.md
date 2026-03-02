@@ -2,7 +2,7 @@
 
 **An extensible Timer solution for Unity Game Development.**
 
-This package provides an efficient and flexible way to integrate self-managed timers into Unity projects. By leveraging Unity's Player Loop, timers are seamlessly integrated into the game loop, allowing developers to create, manage, and extend timers with ease.
+v By leveraging Unity's Player Loop, timers are seamlessly integrated into the game loop, allowing developers to create, manage, and extend timers with ease.
 
 ---
 

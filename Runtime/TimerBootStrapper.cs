@@ -34,7 +34,7 @@ namespace PsigenVision.ImprovedTimers
 		{
 			//Cache the current state of the player loop
 			PlayerLoopSystem currentPlayerLoop = PlayerLoop.GetCurrentPlayerLoop();
-			Debug.Log($"The current player loop is {currentPlayerLoop.type}");
+
 			//Attempt insertion of the timer manager into the current cached player loop system as the first subsystem to be run under update
 			if (!InsertTimerManager<UnityEngine.PlayerLoop.Update>(ref currentPlayerLoop, 0))
 			{

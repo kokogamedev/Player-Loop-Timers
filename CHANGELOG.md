@@ -23,3 +23,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The package is not yet fully functional and is a **work in progress**.
 
 ---
+
+## [0.1.1] - 2026-02-28
+
+### This is a fix patch for some logging that threw errors
+
+### Fixed
+- Removed issue with logging issue in the TimerBootstrapper in which the type of the cached currentPlayerLoop was being requested, which is always null
+
+---
