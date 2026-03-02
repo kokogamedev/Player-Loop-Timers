@@ -28,13 +28,16 @@ v By leveraging Unity's Player Loop, timers are seamlessly integrated into the g
 1. **Timer Management**:  
    `TimerManager` acts as the central hub, managing the lifecycle of all timers. Timers register themselves with the manager and are updated during each frame.
 
-2. **Countdown Timers**:  
-   The `CountdownTimer` class provides a basic implementation of a timer that counts down from an initial value.
+2. **Timer**:
+    The `Timer` abstract base class provides all infrastructure necessary for a Timer (inheritors)
 
-3. **Improved Player Loop**:  
+3. **Countdown Timers**:  
+   The `CountdownTimer` class inherits from the `Timer` class and provides a basic implementation of a timer that counts down from an initial value.
+
+4**Improved Player Loop**:  
    The `TimerBootStrapper` modifies Unity's Player Loop system to include the `TimerManager`. It ensures timers are processed during the `Update` loop without manual intervention.
 
-4. **PlayerLoop Utilities**:  
+5**PlayerLoop Utilities**:  
    The `PlayerLoopUtils` class, a utility from another package, is utilized to manage Player Loop modifications seamlessly.
 
 ---
@@ -56,28 +59,298 @@ The `TimerManager` is seamlessly integrated into Unity's Player Loop and updates
 Extend the `Timer` abstract class to create your own custom timer logic.
 
 ---
+# TimerBootStrapper API Documentation
 
-### API Documentation
+**Namespace**: *`PsigenVision.ImprovedTimers`*
 
-#### `CountdownTimer`
-- **Purpose**: A timer that decrements over time until completion.
-- **Methods**:
-    - `Update()`: Handles the decrement of time during updates.
-    - `IsFinished`: Indicates whether the timer has completed.
+## Overview
+The `TimerBootStrapper` class serves as an integration point for the `TimerManager` in Unity's Player Loop. It provides methods for initializing and managing the `TimerManager` subsystem, allowing timers to update automatically within the **Update Player Loop** phase.
 
-#### `TimerManager`
-- **Purpose**: Centralized manager for registering and updating timers.
-- **Methods**:
-    - `RegisterTimer(Timer timer)`: Registers a timer for updates.
-    - `DeregisterTimer(Timer timer)`: Unregisters a timer.
-    - `UpdateTimers()`: Updates all registered timers.
-    - `Clear()`: Clears all timers, used during cleanup.
+---
 
-#### `TimerBootStrapper`
-- **Purpose**: Integrates the `TimerManager` into Unity's `Update` Player Loop.
-- **Initialization**: Automatically initializes on runtime with `RuntimeInitializeOnLoadMethod`.
+## Methods
 
-#### `PlayerLoopUtils` (From Utility Toolkit)
+- **`void Initialize()`**  
+  Initializes the `TimerBootStrapper`. This configures necessary settings or lifecycle handling required for the proper functioning of the `TimerManager` in the Player Loop.
+
+- **`bool InsertTimerManager<T>(ref PlayerLoopSystem loop, int index)`**  
+  Inserts the `TimerManager` into a specific position of Unity’s `PlayerLoopSystem`.
+    - **Parameters**:
+        - `ref PlayerLoopSystem loop`: The Player Loop that is being modified.
+        - `int index`: The index at which the `TimerManager` system should be inserted.
+    - **Returns**:
+        - `true` if insertion was successful, otherwise `false`.
+
+- **`void RemoveTimerManager<T>(ref PlayerLoopSystem loop)`**  
+  Removes the `TimerManager` subsystem from Unity’s `PlayerLoopSystem`.
+    - **Parameters**:
+        - `ref PlayerLoopSystem loop`: The Player Loop that is being modified.
+
+---
+
+# TimerManager API Documentation
+
+**Namespace**: *`PsigenVision.ImprovedTimers`*
+
+## Overview
+The `TimerManager` is a centralized manager for maintaining and updating active timers within the game. It provides mechanisms to register, deregister, and update timers. The `TimerManager` is typically hooked into Unity's **Update Player Loop** system through the `TimerBootStrapper`.
+
+---
+
+## Fields
+
+- **`List<Timer> timers`** *(Private)*  
+  A list that stores all currently registered timers.
+
+---
+
+## Methods
+
+- **`static void RegisterTimer(Timer timer)`**  
+  Registers a new timer with the `TimerManager`. The registered timer will be managed and updated automatically.
+    - **Parameters**:
+        - `Timer timer`: The timer instance to be registered.
+
+- **`static void DeregisterTimer(Timer timer)`**  
+  Deregisters a timer from the `TimerManager`.
+    - **Parameters**:
+        - `Timer timer`: The timer instance to be removed.
+
+- **`static void UpdateTimers()`**  
+  Updates all registered timers by invoking their `Update()` method. This operation mimics a ticking mechanism and is typically triggered within each frame when integrated into the Player Loop.
+
+- **`static void Clear()`**  
+  Clears all registered timers from the `TimerManager`.
+
+
+---
+
+
+# Timer API Documentation
+
+**Namespace**: *`PsigenVision.ImprovedTimers`*
+
+## Overview
+The `Timer` class serves as a base class for implementing time-tracking mechanisms in Unity. It provides core functionality such as starting, pausing, resuming, stopping, resetting, and updating a timer over time.
+
+---
+
+## Properties
+
+- **`float CurrentTime`**  
+  The current time remaining for the timer.
+
+- **`bool IsRunning`**  
+  Indicates if the timer is currently running.
+
+- **`float Progress`**  
+  Represents the progress of the timer. (For example, this could be the percentage of elapsed time.)
+
+- **`bool IsFinished`**  
+  Determines whether the timer has finished its operation, i.e., the countdown is complete or the set time has elapsed.
+
+---
+
+## Constructors
+
+- **`Timer(float initialTime)`**  
+  Initializes a `Timer` instance with the specified initial time in seconds.
+
+---
+
+## Methods
+
+- **`void Start()`**  
+  Starts the timer.
+
+- **`void Stop()`**  
+  Stops the timer.
+
+- **`void Resume()`**  
+  Resumes the timer if it was paused.
+
+- **`void Pause()`**  
+  Pauses the timer without resetting its current time.
+
+- **`void Reset()`**  
+  Resets the timer to its initial time.
+
+- **`void Reset(float newTime)`**  
+  Resets the timer and sets a new initial time in seconds.
+
+- **`void Update()`**  
+  Updates the state of the timer, typically called within a game loop or update mechanism.
+
+- **`void Dispose()`**  
+  Releases resources used by the timer.
+
+- **`void Dispose(bool disposing)`**  
+  Releases resources with additional disposal configuration.
+
+---
+
+# CountdownTimer API Documentation
+
+**Namespace**: *`PsigenVision.ImprovedTimers`*  
+**Inheritance**: `CountdownTimer` → `Timer`
+
+## Overview
+The `CountdownTimer` class is a specialized implementation of the `Timer` class. It counts down from a specified time and stops when the countdown reaches zero or a negative value. Ideal for use cases such as countdowns for cooldowns, delays, or other time-based gameplay mechanics.
+
+This class operates by decrementing the current time value each frame while the timer is running.
+
+---
+
+## Constructors
+
+- **`CountdownTimer(float initialTime)`**  
+  Initializes a `CountdownTimer` with a specified duration in seconds.
+
+---
+
+## Properties
+
+- **`bool IsFinished`**  
+  Determines whether the countdown has been completed. Overrides the `IsFinished` property from the `Timer` base class.
+    - **Behavior**: Returns `true` if `CurrentTime` is greater than zero, otherwise `false`.
+
+---
+
+## Methods
+
+- **`void Update()`**  
+  Updates the countdown timer's state and performs the following operations:
+    - If the timer is not running, the method exits without updating the timer.
+    - If the timer is running and `CurrentTime > 0`, it decrements `CurrentTime` using `Time.deltaTime`.
+    - If the timer reaches zero or a negative value, the timer automatically stops itself.
+
+  **Example Pseudocode**:
+  ```pseudo
+  if IsRunning is false:
+      exit
+  if CurrentTime > 0:
+      decrement CurrentTime by Time.deltaTime
+  else:
+      stop the timer
+  ```
+
+---
+
+## Example Usage
+
+### Basic Initialization and Use
+```csharp
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace PsigenVision.ImprovedTimers.Demo
+{
+    public class TimerExample : MonoBehaviour
+    {
+        [SerializeField] private UIDocument radialBarUI;
+        [SerializeField] private float timer1Duration = 10f;
+        [SerializeField] private float timer2Duration = 5f;
+        
+        private CountdownTimer timer1, timer2;
+        [SerializeField] private float outerRadialBarProgress;
+        [SerializeField] private float innerRadialBarProgress;
+
+        private bool isInitialized = false;
+        
+        // Start is called once before the first execution of Update after the MonoBehaviour is created
+        void Start()
+        {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            isInitialized = true;
+            //Bind progress of radial bars to this script as its data source
+            VisualElement root = radialBarUI.rootVisualElement;
+            var firstRadialBar = root.Q<RadialBar>();
+            var secondRadialBar = root.Q<VisualElement>("RadialBar").Q<RadialBar>();
+
+            if (firstRadialBar == null)
+            {
+                Debug.LogError("Outer RadialBar element not found");
+                isInitialized = false;
+            }
+
+            if (secondRadialBar == null)
+            {
+                Debug.LogError("Inner RadialBar element not found");
+                isInitialized = false;
+            }
+
+            if (isInitialized)
+            {
+                //NOTE: From within UI builder, bind the progress property to the Progress property of the timers (e.g. timer1.Progress) - See included Sample for example 
+                firstRadialBar.dataSource = this;
+                secondRadialBar.dataSource = this;
+            }
+            
+            //Create countdown timers
+            if ((timer1 = new CountdownTimer(timer1Duration)) == null)
+            {
+                Debug.LogError("Failed to create timer1");
+                isInitialized = false;
+            }
+
+            if ((timer2 = new CountdownTimer(timer2Duration)) == null)
+            {
+                Debug.LogError("Failed to create timer2");
+                isInitialized = false;
+            }
+            
+            //Start countdown timers
+            timer1.Start();
+            timer2.Start();
+            
+            //Provide debug log message hooks into timer start and stop callback events
+            timer1.OnTimerStart += () => Debug.Log("Timer1 started");
+            timer2.OnTimerStart += () => Debug.Log("Timer2 started");
+            timer1.OnTimerStop += () => Debug.Log("Timer1 stopped");
+            timer2.OnTimerStop += () => Debug.Log("Timer2 stopped");
+
+            if (!isInitialized)
+            {
+                Debug.LogError("Failed to initialize timer example");
+            }
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (!isInitialized) return;
+            //Update radial bars' progress with the countdown timers' progress
+            //First radial bar will be treated as a segmented radial bar
+            float maxSegments = Mathf.CeilToInt(timer1Duration); //Derive how many segments we want in the bar
+            float segmentsToShow = Mathf.CeilToInt(timer1.Progress * maxSegments); //Derive how many segments are currently visible based on the timer's progress
+            outerRadialBarProgress = (segmentsToShow / maxSegments)*100f;
+            
+            //Second radial bar will be treated as if it is continuous
+            innerRadialBarProgress = timer2.Progress * 100f;
+        }
+
+        void OnDestroy()
+        {
+            //Dispose of our timers (perform cleanup) when the object is destroyed
+            timer1.Dispose();
+            timer2.Dispose();
+        }
+    }
+}
+
+```
+
+---
+
+
+
+### External API Documentation
+
+#### `PlayerLoopUtils` (From PsigenVision Utilities Toolkit)
 - **Purpose**: Facilitates Player Loop modifications, making it easier to insert and remove subsystems from Unity's Player Loop structure. This is crucial for ensuring that the `TimerManager` is integrated cleanly into the game loop.
 
 - **Key Methods**:
@@ -100,9 +373,3 @@ Extend the `Timer` abstract class to create your own custom timer logic.
 ### Support and Contributions
 
 For support or to contribute to this package, please contact the developer or submit a pull request.
-
----
-
-### License
-
-[Insert your license details here, if applicable.]

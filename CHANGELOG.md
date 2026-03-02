@@ -32,3 +32,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Removed issue with logging issue in the TimerBootstrapper in which the type of the cached currentPlayerLoop was being requested, which is always null
 
 ---
+## [0.1.0] - 2026-03-02
+
+### This is a small refactoring and addition of callback events.
+
+### Added
+- **OnTimerPause** and **OnTimerResume** callbacks added to Timer and all its inheritors, called by **Pause** and **Resume** methods, respectively
+- **Start** and **Stop** methods now track timer start-state using flag
+- **Pause** and **Resume** guarded by start-state flag (not executed if timer is not started)
+- All callbacks initially assigned to null rather than an anonymous delegate for performance purposes
+- All methods made virtual for maximum extensibility
+
+---

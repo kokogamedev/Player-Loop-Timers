@@ -36,6 +36,13 @@ namespace PsigenVision.ImprovedTimers
         protected float initialTime;
 
         /// <summary>
+        /// Indicates whether the timer has been started.
+        /// Tracks the initialization state of the timer, ensuring operations
+        /// like Start, Stop, or Resume behave correctly based on the timer's status.
+        /// </summary>
+        protected bool started = false;
+
+        /// <summary>
         /// Gets the normalized progress of the timer as a value between 0 and 1.
         /// Calculated as the current timer value divided by the initial time and clamped within the valid range.
         /// </summary>
@@ -47,7 +54,7 @@ namespace PsigenVision.ImprovedTimers
         /// This callback action is invoked after successfully initiating the timer's operation.
         /// Typically used for executing logic tied to the start of the timer, such as UI updates or other side effects.
         /// </summary>
-        public Action OnTimerStart = delegate { };
+        public Action OnTimerStart = null;
 
         /// <summary>
         /// Represents an event that is triggered when the timer stops.
@@ -55,7 +62,21 @@ namespace PsigenVision.ImprovedTimers
         /// Typically used to execute logic associated with the timer stopping, such as finalizing
         /// operations, updating UI, or other related functionality.
         /// </summary>
-        public Action OnTimerStop = delegate { };
+        public Action OnTimerStop = null;
+
+        /// <summary>
+        /// Event invoked when the timer is paused.
+        /// Provides an opportunity to handle any specific logic or operations needed
+        /// when the timer transitions to a paused state.
+        /// </summary>
+        public Action OnTimerPause = null;
+
+        /// <summary>
+        /// An action triggered when the timer resumes after being paused.
+        /// Provides a way to execute custom logic or handle events
+        /// specifically related to resuming the timer's operation.
+        /// </summary>
+        public Action OnTimerResume = null;
 
         public Timer(float initialTime) => this.initialTime = initialTime;
         
@@ -63,17 +84,15 @@ namespace PsigenVision.ImprovedTimers
         /// Starts the timer by setting its current time to the initial value and registering it with the TimerManager.
         /// If the timer is not already running, it changes its state to running and triggers the OnTimerStart callback.
         /// </summary>
-        public void Start()
+        public virtual void Start()
         {
             //Set the current time to the cached initial time
             CurrentTime = initialTime;
             //If the timer is currently running, set the IsRunning state to false, deregister this timer with the timer manager, and fire off the OnTimerStop event
-            if (!IsRunning)
-            {
-                IsRunning = true;
-                TimerManager.RegisterTimer(this);
-                OnTimerStart.Invoke();
-            }
+            if (started || IsRunning) return;
+            IsRunning = started = true;
+            TimerManager.RegisterTimer(this);
+            OnTimerStart.Invoke();
         }
 
         /// <summary>
@@ -81,30 +100,42 @@ namespace PsigenVision.ImprovedTimers
         /// If the timer is currently running, it deregisters itself from the TimerManager and
         /// triggers the OnTimerStop callback to notify listeners that the timer has stopped.
         /// </summary>
-        public void Stop()
+        public virtual void Stop()
         {
             //If the timer is not already running, set the IsRunning state to true, register this timer with the timer manager, and fire off the OnTimerStart event
-            if (IsRunning)
-            {
-                IsRunning = false;
-                TimerManager.DeregisterTimer(this);
-                OnTimerStop.Invoke();
-            }
+            if (!started || !IsRunning) return;
+            
+            IsRunning = started = false;
+            TimerManager.DeregisterTimer(this);
+            OnTimerStop.Invoke();
         }
 
         /// <summary>
-        /// Resumes the timer by setting its running state to true.
-        /// This enables the timer to continue tracking time from its current state.
-        /// Typically used after the timer has been paused to allow it to proceed without resetting.
+        /// Resumes the timer, allowing it to continue from its current state if it was previously paused.
+        /// If the timer has not been started or is already running, the method has no effect.
+        /// Triggers the OnTimerResume callback upon successful resumption.
         /// </summary>
-        public void Resume() => IsRunning = true;
+        public virtual void Resume()
+        {
+            //If the timer hasn't been started, do not proceed (no active timer to resume)
+            //If the timer is already running, do not proceed
+            if (!started || IsRunning) return;
+            IsRunning = true;
+            OnTimerResume.Invoke();
+        }
 
         /// <summary>
-        /// Pauses the timer by setting its running state to false.
-        /// This halts the timer's progression without resetting its current time,
-        /// allowing a subsequent resume to continue from the paused state.
+        /// Pauses the timer by setting its state to not running and triggering the OnTimerPause callback.
+        /// This method has no effect if the timer has not been started or is already paused.
         /// </summary>
-        public void Pause() => IsRunning = false;
+        public virtual void Pause()
+        {
+            //If the timer hasn't been started, do not proceed (no active timer to pause)
+            //If the timer is already paused (not running), do not proceed
+            if (!started || !IsRunning) return;
+            IsRunning = false;
+            OnTimerPause.Invoke();
+        }
 
         #region Overridable/Abstract Members
 
@@ -140,8 +171,7 @@ namespace PsigenVision.ImprovedTimers
         /// Represents the state of the timer, where true indicates the timer has finished
         /// and false indicates it is still running or in progress.
         /// </summary>
-        public abstract bool
-            IsFinished
+        public abstract bool IsFinished
         {
             get;
         } //each timer implementer is responsible for providing their own definition for the finished state of the timer (e.g. countdown timer and stopwatch timer have different finishing conditions)
