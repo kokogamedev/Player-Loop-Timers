@@ -46,7 +46,7 @@ namespace PsigenVision.ImprovedTimers
 			PlayerLoop.SetPlayerLoop(currentPlayerLoop);
 			
 			//Debug - optional - Print player loop
-			PlayerLoopUtils.PrintPlayerLoop(currentPlayerLoop);
+			//PlayerLoopUtils.PrintPlayerLoop(currentPlayerLoop);
 			
 			//Ensure that when we come out of playmode, all clean up is performed (disposal and finalizing of the Time Manager class)
 			//This is to prevent, for example, multiple TimeManager player loop systems being injected on entering playmode in the event automatic domain reload is not enabled

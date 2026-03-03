@@ -151,6 +151,25 @@ The `Timer` class serves as a base class for implementing time-tracking mechanis
 
 ---
 
+## Callbacks/Events
+
+- **`event Action OnTimerStart`**  
+  A callback fired when a timer is started (Start method called)
+
+- **`event Action OnTimerStop`**  
+  A callback fired when a timer is stopped and not finished (Stop method called)
+
+- **`event Action OnTimerResume`**  
+  A callback fired when a timer is resumed (Resume method called when a timer has already been started and isn't running)
+
+- **`event Action OnTimerPause`**  
+  A callback fired when a timer is paused (Pause method called when a timer has already been started and is running)
+
+- **`event Action OnTimerFinish`**
+  A callback fired when a timer has finished (inheritors should call the protected Stop method with a finished parameter of true at the point the timer finishes)
+
+---
+
 ## Constructors
 
 - **`Timer(float initialTime)`**  
@@ -160,32 +179,38 @@ The `Timer` class serves as a base class for implementing time-tracking mechanis
 
 ## Methods
 
-- **`void Start()`**  
+- **`public void Start()`**  
   Starts the timer.
 
-- **`void Stop()`**  
+- **`public void Stop()`**  
+  Stops the timer (before it is finished).
+
+- **`public void Stop()`**  
   Stops the timer.
 
-- **`void Resume()`**  
+- **`public void Resume()`**  
   Resumes the timer if it was paused.
 
-- **`void Pause()`**  
+- **`public void Pause()`**  
   Pauses the timer without resetting its current time.
 
-- **`void Reset()`**  
+- **`public void Reset()`**  
   Resets the timer to its initial time.
 
-- **`void Reset(float newTime)`**  
+- **`public void Reset(float newTime)`**  
   Resets the timer and sets a new initial time in seconds.
 
-- **`void Update()`**  
+- **`public void Update()`**  
   Updates the state of the timer, typically called within a game loop or update mechanism.
 
-- **`void Dispose()`**  
+- **`public void Dispose()`**  
   Releases resources used by the timer.
 
-- **`void Dispose(bool disposing)`**  
+- **`protected void Dispose(bool disposing)`**  
   Releases resources with additional disposal configuration.
+
+- **`protected void Stop(bool finished)`**  
+  Performs all stopping steps (deregistration of timer, change of internal state) for the timer, and invokes the correct event based on the finished parameter (OnTimerFinish for finished being true, and OnTimerStop otherwise)
 
 ---
 
@@ -231,7 +256,7 @@ This class operates by decrementing the current time value each frame while the 
   if CurrentTime > 0:
       decrement CurrentTime by Time.deltaTime
   else:
-      stop the timer
+      stop the timer in finished state (call Stop(true) to invoke necessary callback)
   ```
 
 ---
@@ -254,19 +279,26 @@ namespace PsigenVision.ImprovedTimers.Demo
         private CountdownTimer timer1, timer2;
         [SerializeField] private float outerRadialBarProgress;
         [SerializeField] private float innerRadialBarProgress;
-
+        private int outerRadialBarSegmentCount;
         private bool isInitialized = false;
+        void Awake() => Initialize();
         
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            Initialize();
+            if (!isInitialized) return;
+            
+            //Start countdown timers
+            timer1.Start();
+            timer2.Start();
         }
 
         private void Initialize()
         {
             isInitialized = true;
+            
             //Bind progress of radial bars to this script as its data source
+            //NOTE: From within UI builder, bind the progress property to the Progress property of the timers (e.g. timer1.Progress) - See included Sample for example
             VisualElement root = radialBarUI.rootVisualElement;
             var firstRadialBar = root.Q<RadialBar>();
             var secondRadialBar = root.Q<VisualElement>("RadialBar").Q<RadialBar>();
@@ -285,7 +317,6 @@ namespace PsigenVision.ImprovedTimers.Demo
 
             if (isInitialized)
             {
-                //NOTE: From within UI builder, bind the progress property to the Progress property of the timers (e.g. timer1.Progress) - See included Sample for example 
                 firstRadialBar.dataSource = this;
                 secondRadialBar.dataSource = this;
             }
@@ -302,20 +333,18 @@ namespace PsigenVision.ImprovedTimers.Demo
                 Debug.LogError("Failed to create timer2");
                 isInitialized = false;
             }
-            
-            //Start countdown timers
-            timer1.Start();
-            timer2.Start();
-            
-            //Provide debug log message hooks into timer start and stop callback events
-            timer1.OnTimerStart += () => Debug.Log("Timer1 started");
-            timer2.OnTimerStart += () => Debug.Log("Timer2 started");
-            timer1.OnTimerStop += () => Debug.Log("Timer1 stopped");
-            timer2.OnTimerStop += () => Debug.Log("Timer2 stopped");
 
-            if (!isInitialized)
+            if (!isInitialized) Debug.LogError("Failed to initialize timer example");
+            else
             {
-                Debug.LogError("Failed to initialize timer example");
+                //Calculate the amount of segments in outer radial bar
+                outerRadialBarSegmentCount = Mathf.CeilToInt(timer1Duration); //Derive how many segments we want in the bar
+                
+                //Provide debug log message hooks into timer start and finish callback events
+                timer1.OnTimerStart += () => Debug.Log("Timer1 started");
+                timer2.OnTimerStart += () => Debug.Log("Timer2 started");
+                timer1.OnTimerFinish += () => Debug.Log("Timer1 finished");
+                timer2.OnTimerFinish += () => Debug.Log("Timer2 finished");
             }
         }
 
@@ -325,9 +354,11 @@ namespace PsigenVision.ImprovedTimers.Demo
             if (!isInitialized) return;
             //Update radial bars' progress with the countdown timers' progress
             //First radial bar will be treated as a segmented radial bar
-            float maxSegments = Mathf.CeilToInt(timer1Duration); //Derive how many segments we want in the bar
-            float segmentsToShow = Mathf.CeilToInt(timer1.Progress * maxSegments); //Derive how many segments are currently visible based on the timer's progress
-            outerRadialBarProgress = (segmentsToShow / maxSegments)*100f;
+            //Derive how many segments are currently visible based on the timer's progress by dividing by the total segment count
+            outerRadialBarProgress = 
+                (float)Mathf.CeilToInt(timer1.Progress * outerRadialBarSegmentCount) //Calculate the amount of segments to show
+                / outerRadialBarSegmentCount //Convert to normalized progress
+                * 100f; //Convert to percent (the units used by the radial bar)
             
             //Second radial bar will be treated as if it is continuous
             innerRadialBarProgress = timer2.Progress * 100f;

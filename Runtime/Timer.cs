@@ -29,18 +29,6 @@ namespace PsigenVision.ImprovedTimers
         /// </summary>
         public bool IsRunning { get; protected set; }
 
-        /// <summary>
-        /// Represents the initial time value of the timer in seconds.
-        /// This is the predefined starting point from which the timer begins tracking time.
-        /// </summary>
-        protected float initialTime;
-
-        /// <summary>
-        /// Indicates whether the timer has been started.
-        /// Tracks the initialization state of the timer, ensuring operations
-        /// like Start, Stop, or Resume behave correctly based on the timer's status.
-        /// </summary>
-        protected bool started = false;
 
         /// <summary>
         /// Gets the normalized progress of the timer as a value between 0 and 1.
@@ -54,29 +42,50 @@ namespace PsigenVision.ImprovedTimers
         /// This callback action is invoked after successfully initiating the timer's operation.
         /// Typically used for executing logic tied to the start of the timer, such as UI updates or other side effects.
         /// </summary>
-        public Action OnTimerStart = null;
+        public event Action OnTimerStart = null;
 
         /// <summary>
-        /// Represents an event that is triggered when the timer stops.
-        /// This callback action is invoked after the timer's operation is successfully halted.
-        /// Typically used to execute logic associated with the timer stopping, such as finalizing
-        /// operations, updating UI, or other related functionality.
+        /// Event triggered when the timer is stopped manually BEFORE finishing.
+        /// It is invoked only when the timer's active state is deactivated
+        /// and the corresponding stop operation is performed.
         /// </summary>
-        public Action OnTimerStop = null;
+        public event Action OnTimerStop = null;
 
         /// <summary>
         /// Event invoked when the timer is paused.
         /// Provides an opportunity to handle any specific logic or operations needed
         /// when the timer transitions to a paused state.
         /// </summary>
-        public Action OnTimerPause = null;
+        public event Action OnTimerPause = null;
 
         /// <summary>
         /// An action triggered when the timer resumes after being paused.
         /// Provides a way to execute custom logic or handle events
         /// specifically related to resuming the timer's operation.
         /// </summary>
-        public Action OnTimerResume = null;
+        public event Action OnTimerResume = null;
+
+        /// <summary>
+        /// Represents the initial time value of the timer in seconds.
+        /// This is the predefined starting point from which the timer begins tracking time.
+        /// </summary>
+        protected float initialTime;
+
+        /// <summary>
+        /// Indicates whether the timer has been started.
+        /// Tracks the initialization state of the timer, ensuring operations
+        /// like Start, Stop, or Resume behave correctly based on the timer's status.
+        /// </summary>
+        protected bool started = false;
+        
+        /// <summary>
+        /// An action delegate that is invoked when the timer finishes.
+        /// Represents the completion state of the timer, typically triggered
+        /// when the countdown or tracking process reaches its end.
+        /// Can be assigned a callback function to execute custom logic
+        /// upon the timer's completion.
+        /// </summary>
+        public event Action OnTimerFinish = null;
 
         public Timer(float initialTime) => this.initialTime = initialTime;
         
@@ -92,22 +101,38 @@ namespace PsigenVision.ImprovedTimers
             if (started || IsRunning) return;
             IsRunning = started = true;
             TimerManager.RegisterTimer(this);
-            OnTimerStart.Invoke();
+            OnTimerStart?.Invoke();
         }
 
         /// <summary>
         /// Stops the timer by changing its state to not running and removing it from the TimerManager.
         /// If the timer is currently running, it deregisters itself from the TimerManager and
-        /// triggers the OnTimerStop callback to notify listeners that the timer has stopped.
+        /// triggers the OnTimerStop callback to notify listeners that the timer has stopped. This does NOT
+        /// result in the OnTimerFinish callback being fired.
         /// </summary>
-        public virtual void Stop()
+        public virtual void Stop() => Stop(false);
+
+        /// <summary>
+        /// Stops the timer and updates its internal state to reflect that it is no longer running.
+        /// If the timer was running, it deregisters the timer from the TimerManager,
+        /// updates the timer state, and invokes the appropriate callback based on whether the timer was finished.
+        /// </summary>
+        /// <param name="finished">Indicates whether the timer has completed its duration or if it was manually stopped before completion.</param>
+        protected virtual void Stop(bool finished)
         {
             //If the timer is not already running, set the IsRunning state to true, register this timer with the timer manager, and fire off the OnTimerStart event
             if (!started || !IsRunning) return;
             
+            //Handle internal state changes for a stopped timer
             IsRunning = started = false;
+            
+            //Prevent TimerManager from further updating this timer
             TimerManager.DeregisterTimer(this);
-            OnTimerStop.Invoke();
+            
+            //If the timer has finished, fire the finished event
+            if (finished) OnTimerFinish?.Invoke();
+            //If the timer has not finished but has been stopped, fire the stopped event
+            else OnTimerStop?.Invoke();
         }
 
         /// <summary>
@@ -121,7 +146,7 @@ namespace PsigenVision.ImprovedTimers
             //If the timer is already running, do not proceed
             if (!started || IsRunning) return;
             IsRunning = true;
-            OnTimerResume.Invoke();
+            OnTimerResume?.Invoke();
         }
 
         /// <summary>
@@ -134,7 +159,7 @@ namespace PsigenVision.ImprovedTimers
             //If the timer is already paused (not running), do not proceed
             if (!started || !IsRunning) return;
             IsRunning = false;
-            OnTimerPause.Invoke();
+            OnTimerPause?.Invoke();
         }
 
         #region Overridable/Abstract Members
@@ -163,6 +188,7 @@ namespace PsigenVision.ImprovedTimers
         /// by derived classes to define specific behaviors that occur each time a timer update is triggered.
         /// Typically called by a timer management system to ensure consistent timer progression across
         /// the application.
+        /// <remarks> <see cref="OnTimerFinish"/> callback must be invoked by the timer from within this method via the base class's Stop(true) </remarks>
         /// </summary>
         public abstract void Update(); //tick timer every update
 

@@ -25,8 +25,8 @@ namespace PsigenVision.ImprovedTimers
             if (!IsRunning) return;
             //If the timer is running and not finished (CurrentTime is positive) decrement CurrentTime
             if (CurrentTime > 0) CurrentTime -= Time.deltaTime;
-            //If the timer is running and IS finished (Current time is negative) Stop timer
-            else Stop();
+            //If the timer is running and IS finished (Current time is negative) Stop timer with the finished state (thereby firing the OnTimerFinish callback)
+            else Stop(true);
         }
 
         /// <summary>
