@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PsigenVision.ImprovedTimers
+namespace PsigenVision.PlayerLoopTimers
 {
     /// <summary>
     /// Represents an abstract base class for a customizable timer.

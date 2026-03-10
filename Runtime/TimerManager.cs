@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PsigenVision.ImprovedTimers
+namespace PsigenVision.PlayerLoopTimers
 {
     public static class TimerManager
     {

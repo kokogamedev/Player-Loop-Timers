@@ -8,7 +8,7 @@ using PsigenVision.Utilities.LowLevel;
 using UnityEditor;
 using UnityEngine.PlayerLoop;
 
-namespace PsigenVision.ImprovedTimers
+namespace PsigenVision.PlayerLoopTimers
 {
 	internal static class TimerBootStrapper
 	{

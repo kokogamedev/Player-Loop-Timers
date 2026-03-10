@@ -1,7 +1,7 @@
 {
   "name": "com.psigenvision.playerlooptimers",
   "displayName": "Player Loop Timers",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "unity": "6000.3",
   "unityRelease": "2f1",
   "description": "Purpose: Provide extensible self-managed timer solution that is centralized and hooked into the player loop.\n\nFunction: Injection of timers into the low level player loop (Update) via a TimerManager.\n\nNote: Based on git-amend's own Improved Timers system.",

@@ -59,3 +59,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove/Comment out any logging/printing methods left over from development stage
 
 ---
+## [0.1.4] - 2026-03-02
+
+### A small refactoring chore - renamed namespace from "ImprovedTimers" to "PlayerLoopTimers"
+
+---

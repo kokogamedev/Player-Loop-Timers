@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PsigenVision.ImprovedTimers
+namespace PsigenVision.PlayerLoopTimers
 {
     /// <summary>
     /// Represents a countdown timer that decrements over time.

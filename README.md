@@ -5,6 +5,8 @@
 v By leveraging Unity's Player Loop, timers are seamlessly integrated into the game loop, allowing developers to create, manage, and extend timers with ease.
 
 ---
+### Important Note
+This package depends on a utility class, `PlayerLoopUtils`, that is not included in this package (as it comes from a different utilities package). This class has been included in a text file under the References folder.
 
 ### Features
 
@@ -20,6 +22,7 @@ v By leveraging Unity's Player Loop, timers are seamlessly integrated into the g
 1. Download the package or include it via the Unity Package Manager.
 2. Ensure the package is located at `Packages/Player Loop Timers` in your Unity project.
 3. The system automatically initializes after assemblies are loaded at runtime.
+4. If you do not have access to PsigenVision.Utilities.LowLevel.PlayerLoopUtils, then locate the text file in the References folder, and create a .cs file from it. 
 
 ---
 

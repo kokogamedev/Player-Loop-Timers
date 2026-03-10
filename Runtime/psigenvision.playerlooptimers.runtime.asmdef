@@ -1,6 +1,6 @@
 {
-    "name": "psigenvision.playerlooptimers.runtime",
-    "rootNamespace": "",
+    "name": "PsigenVision.PlayerLoopTimers.Runtime",
+    "rootNamespace": "PsigenVision.PlayerLoopTimers",
     "references": [
         "GUID:395011cc2ad6c344c8a867ff2f450601"
     ],
