@@ -56,7 +56,6 @@ namespace PsigenVision.Utilities.LowLevel
 		private static bool HandleSubSystemLoop<T>(ref PlayerLoopSystem loop, in PlayerLoopSystem systemToInsert,
 			int index)
 		{
-			PrintPlayerLoopSystem(loop);
 			//check if we have reached a leaf in the player loop system graph (no more subsystems to recurse)
 			if (loop.subSystemList == null || loop.subSystemList.Length == 0) return false;
 			//go over each subsystem that belongs to this particular node in the player loop graph, and check if its type matches T (the root system we are looking for)
@@ -69,8 +68,6 @@ namespace PsigenVision.Utilities.LowLevel
 				if (InsertSystem<T>(ref loop.subSystemList[i], in systemToInsert, index)) return true;
 			}
 			
-			//if InsertSystem consistently returned false, there is no system of type T in the player loop graph, and we return false to reflect that
-			Debug.LogWarning($"No SubSystem Loop of type {typeof(T)} found in the player loop graph");
 			return false;
 		}
 

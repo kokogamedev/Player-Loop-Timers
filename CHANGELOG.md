@@ -64,3 +64,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### A small refactoring chore - renamed namespace from "ImprovedTimers" to "PlayerLoopTimers"
 
 ---
+## [0.1.5] - 2026-03-13
+
+### A small refactoring and dependency update
+
+### Refactored
+- Moved failure logging from PlayerLoopUtils.HandleSubSystemLoop to TimerBootStrapper.InsertTimeManager
+
+### Updated Dependencies
+- Updated PsigenVision.Utilities package dependency to v1.0.20
+
+---

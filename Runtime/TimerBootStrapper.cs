@@ -107,7 +107,13 @@ namespace PsigenVision.PlayerLoopTimers
 			};
 			
 			//Insert the timer manager player loop system as a subsystem of the player loop system of type T within the current player loop
-			return PlayerLoopUtils.InsertSystem<T>(ref loop, in timerSystem, index);
+			if (!PlayerLoopUtils.InsertSystem<T>(ref loop, in timerSystem, index))
+			{
+				Debug.LogWarning($"Unable to insert timer manager into Player Loop System at {typeof(T).Name}");
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>
