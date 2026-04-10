@@ -6,7 +6,7 @@ v By leveraging Unity's Player Loop, timers are seamlessly integrated into the g
 
 ---
 ### Important Note
-This package depends on a utility class, `PlayerLoopUtils`, that is not included in this package (as it comes from a different utilities package). This class has been included in a text file under the References folder.
+This package depends on a utility class, `PlayerLoopUtils`, that is not included in this package (as it comes from a [different utilities package](https://github.com/kokogamedev/Unity-Native-Scripting-Utilities.git)). This class has been included in a text file under the References folder.
 
 ### Features
 

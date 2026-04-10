@@ -75,3 +75,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated PsigenVision.Utilities package dependency to v1.0.20
 
 ---
+## [0.1.6] - 2026-04-09
+
+### New Dependency
+
+### Updated Dependencies
+- Included the com.psigenvision.utilities.native package as a dependency, as it contains the PlayerLoopUtils upon which this package depends.
+> _Note from Developer_: I did not remove the .txt version of that script in case individuals are only interested in the code on which this package depends. The inclusion of this dependency is largely for my own architecture.
+
+---
+
+
+git remote add origin https://github.com/kokogamedev/Unity-Native-Scripting-Utilities.git

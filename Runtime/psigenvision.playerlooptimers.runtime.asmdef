@@ -2,7 +2,7 @@
     "name": "PsigenVision.PlayerLoopTimers.Runtime",
     "rootNamespace": "PsigenVision.PlayerLoopTimers",
     "references": [
-        "GUID:395011cc2ad6c344c8a867ff2f450601"
+        "GUID:e5e5959f49666c2478ffde6a41c9b426"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
